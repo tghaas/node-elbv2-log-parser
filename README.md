@@ -1,60 +1,49 @@
-# elb-log-parser
+# elbv2-log-parser
 
-[![npm version](https://badge.fury.io/js/elb-log-parser.png)](https://badge.fury.io/js/elb-log-parser)
-[![Build Status](https://travis-ci.org/toshihirock/node-elb-log-parser.svg?branch=master)](https://travis-ci.org/toshihirock/node-elb-log-parser)
 
-A basic parser for ELB access logs, strongly inspired by node-clf-parser https://github.com/jfhbrook/node-clf-parser.
+A basic parser for ELBv2 access logs, blatantly modified from node-elb-log-parser https://github.com/toshihirock/node-elb-log-parser.
 
 ## When I use this npm?
 
-+ ELB Access Log(S3)->Lambda->ElasticSearch. Example [awslabs/amazon-elasticsearch-lambda-samples](https://github.com/awslabs/amazon-elasticsearch-lambda-samples/blob/master/src/s3_lambda_es.js)
++ ELBv2 Access Log(S3)->Lambda->ElasticSearch. Example [awslabs/amazon-elasticsearch-lambda-samples](https://github.com/awslabs/amazon-elasticsearch-lambda-samples/blob/master/src/s3_lambda_es.js)
 + Analyze ELB Access Log
 
-## Install
-
-```
-npm install -g elb-log-parser
-```
-
-## Example command-line usage
-
-```
-906058675309_elasticloadbalancing_us-east-1_my-elb_20160420T1700Z_10.0.33.113_115hdtdv.log > elb-log-parser
-```
-Outputs JSON which can then be further processed with e.g. something like the [json](https://www.npmjs.com/package/json) tool.
 
 ## Example API usage
 
 ```
-node-elb-log-parser$node
+$ node
 > var parse = require('./index');
 undefined
-> parse('2015-05-13T23:39:43.945958Z my-loadbalancer 192.168.131.39:2817 10.0.0.1:80 0.000086 0.001048 0.001337 200 200 0 57 "GET https://mytest-111.ap-northeast-1.elb.amazonaws.com:443/p/a/t/h?foo=bar&hoge=fuga HTTP/1.1" "curl/7.38.0" DHE-RSA-AES128-SHA TLSv1.2')
-{ timestamp: '2015-05-13T23:39:43.945958Z',
-  elb: 'my-loadbalancer',
-  client: '192.168.131.39',
-  client_port: '2817',
-  backend: '10.0.0.1',
-  request_processing_time: '0.000086',
-  backend_processing_time: '0.001048',
-  response_processing_time: '0.001337',
+> parse('h2 2016-08-10T00:10:33.145057Z app/my-loadbalancer/50dc6c495c0c9188 10.0.1.252:48160 10.0.0.66:9000 0.000 0.002 0.000 200 200 5 257 "GET https://10.0.2.105:773/ HTTP/2.0" "curl/7.46.0" ECDHE-RSA-AES128-GCM-SHA256 TLSv1.2 arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-targets/73e2d6bc24d8a067 "Root=1-58337327-72bd00b0343d75b906739c42"');
+{ type: 'h2',
+  timestamp: '2016-08-10T00:10:33.145057Z',
+  elb: 'app/my-loadbalancer/50dc6c495c0c9188',
+  client: '10.0.1.252',
+  client_port: '48160',
+  target: '10.0.0.66',
+  request_processing_time: '0.000',
+  target_processing_time: '0.002',
+  response_processing_time: '0.000',
   elb_status_code: '200',
-  backend_status_code: '200',
-  received_bytes: '0',
-  sent_bytes: '57',
-  request: 'GET https://mytest-111.ap-northeast-1.elb.amazonaws.com:443/p/a/t/h?foo=bar&hoge=fuga HTTP/1.1',
-  user_agent: 'curl/7.38.0',
-  ssl_cipher: 'DHE-RSA-AES128-SHA',
+  target_status_code: '200',
+  received_bytes: '5',
+  sent_bytes: '257',
+  request: 'GET https://10.0.2.105:773/ HTTP/2.0',
+  user_agent: 'curl/7.46.0',
+  ssl_cipher: 'ECDHE-RSA-AES128-GCM-SHA256',
   ssl_protocol: 'TLSv1.2',
-  backend_port: '80',
+  target_group_arn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-targets/73e2d6bc24d8a067',
+  trace_id: 'Root=1-58337327-72bd00b0343d75b906739c42',
+  target_port: '9000',
   request_method: 'GET',
-  request_uri: 'https://mytest-111.ap-northeast-1.elb.amazonaws.com:443/p/a/t/h?foo=bar&hoge=fuga',
-  request_http_version: 'HTTP/1.1',
+  request_uri: 'https://10.0.2.105:773/',
+  request_http_version: 'HTTP/2.0',
   request_uri_scheme: 'https:',
-  request_uri_host: 'mytest-111.ap-northeast-1.elb.amazonaws.com',
-  request_uri_port: '443',
-  request_uri_path: '/p/a/t/h',
-  request_uri_query: 'foo=bar&hoge=fuga' }
+  request_uri_host: '10.0.2.105',
+  request_uri_port: '773',
+  request_uri_path: '/',
+  request_uri_query: null }
 >
 ```
 

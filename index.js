@@ -23,22 +23,25 @@ module.exports = function (line) {
   }
 
   [
+    { 'type'                        : ' '   },
     { 'timestamp'                   : ' '   },
     { 'elb'                         : ' '   },
     { 'client'                      : ':'   },
     { 'client_port'                 : ' '   },
-    { 'backend'                     : ' '   },
+    { 'target'                      : ' '   },
     { 'request_processing_time'     : ' '   },
-    { 'backend_processing_time'     : ' '   },
+    { 'target_processing_time'      : ' '   },
     { 'response_processing_time'    : ' '   },
     { 'elb_status_code'             : ' '   },
-    { 'backend_status_code'         : ' '   },
+    { 'target_status_code'          : ' '   },
     { 'received_bytes'              : ' '   },
     { 'sent_bytes'                  : ' "'  },
     { 'request'                     : '" "' },
     { 'user_agent'                  : '" '  },
     { 'ssl_cipher'                  : ' '   },
-    { 'ssl_protocol'                : ' '   }
+    { 'ssl_protocol'                : ' '   },
+    { 'target_group_arn'            : ' "'   },
+    { 'trace_id'                    : '"'   },
   ].some(function (t) {
     var label = Object.keys(t)[0];
     delimiter = t[label]
@@ -65,12 +68,12 @@ module.exports = function (line) {
     parsed[label] = field;
   });
 
-  // backend
-  if(parsed.backend != -1) {
-    parsed['backend_port'] = parsed.backend.split(":")[1];
-    parsed['backend'] = parsed.backend.split(":")[0];
+  // target
+  if(parsed.target != -1) {
+    parsed['target_port'] = parsed.target.split(":")[1];
+    parsed['target'] = parsed.target.split(":")[0];
   } else {
-    parsed['backend_port'] = '-1';
+    parsed['target_port'] = '-1';
   }
 
   // request
